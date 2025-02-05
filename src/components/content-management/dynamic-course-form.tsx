@@ -11,6 +11,25 @@ import { X, Printer, ChevronDown, ChevronUp } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SortableContainer } from "./sortable-container"
 import type { Unit, Exercise, DraggableSection, MatchPairSection, ListenChoiceOption, ChoosePicOption } from "./types"
+import { CourseWordsForm } from "./course-words-form"
+
+interface VoiceType {
+  type: string;
+  audioUrl: string;
+}
+
+interface WordFormData {
+  source: {
+    word: string;
+    partOfSpeech: string;
+    voiceTypes: VoiceType[];
+  };
+  target: {
+    word: string;
+    partOfSpeech: string;
+    voiceTypes: VoiceType[];
+  };
+}
 
 export default function DynamicCourseForm() {
   const [unit, setUnit] = useState<Unit>({
@@ -21,6 +40,42 @@ export default function DynamicCourseForm() {
   })
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({})
   const printRef = useRef<HTMLDivElement>(null)
+
+  const [wordFormData, setWordFormData] = useState<WordFormData>({
+    source: {
+      word: "",
+      partOfSpeech: "",
+      voiceTypes: [],
+    },
+    target: {
+      word: "",
+      partOfSpeech: "",
+      voiceTypes: [],
+    },
+  });
+
+  const partsOfSpeechUrdu = [
+    { value: "ism", label: "اسم" },
+    { value: "fail", label: "فعل" },
+    { value: "sift", label: "صفت" },
+    { value: "zarf", label: "ظرف" },
+  ];
+
+  const partsOfSpeechEnglish = [
+    { value: "noun", label: "Noun" },
+    { value: "verb", label: "Verb" },
+    { value: "adjective", label: "Adjective" },
+    { value: "adverb", label: "Adverb" },
+  ];
+
+  const voiceTypes = [
+    'male_normal',
+    'female_normal',
+    'male_slow',
+    'female_slow',
+    'male_formal',
+    'female_formal'
+  ];
 
   const addLesson = useCallback(() => {
     setUnit((prevUnit) => ({
@@ -305,6 +360,50 @@ export default function DynamicCourseForm() {
       }
     }
   }, [])
+
+  const handleAddVoice = (language: 'source' | 'target') => {
+    setWordFormData(prev => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: [
+          ...prev[language].voiceTypes,
+          { type: '', audioUrl: '' }
+        ]
+      }
+    }));
+  };
+
+  const handleVoiceChange = (
+    language: 'source' | 'target',
+    index: number,
+    field: 'type' | 'audioUrl',
+    value: string
+  ) => {
+    setWordFormData(prev => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: prev[language].voiceTypes.map((voice, i) =>
+          i === index ? { ...voice, [field]: value } : voice
+        )
+      }
+    }));
+  };
+
+  const handleSubmitWordForm = () => {
+    console.log(JSON.stringify(wordFormData, null, 2));
+  };
+
+  const handleRemoveVoice = (language: 'source' | 'target', index: number) => {
+    setWordFormData(prev => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: prev[language].voiceTypes.filter((_, i) => i !== index)
+      }
+    }));
+  };
 
   const renderExercise = (exercise: Exercise, lessonIndex: number, exerciseIndex: number) => {
     return (
@@ -699,6 +798,7 @@ export default function DynamicCourseForm() {
         <TabsList className="mb-4">
           <TabsTrigger value="edit">Edit</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="course-words">Course Words</TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
           <Card className="mb-6">
@@ -782,6 +882,9 @@ export default function DynamicCourseForm() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="course-words">
+          <CourseWordsForm />
         </TabsContent>
       </Tabs>
     </div>
