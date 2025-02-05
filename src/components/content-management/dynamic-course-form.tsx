@@ -11,8 +11,21 @@ import { X, Printer, ChevronDown, ChevronUp } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SortableContainer } from "./sortable-container"
 import type { Unit, Exercise, DraggableSection, MatchPairSection, ListenChoiceOption, ChoosePicOption } from "./types"
+import CourseWords from "./course-words"
 
 export default function DynamicCourseForm() {
+    const [courseWord, setCourseWord] = useState({
+    source: {
+      word: "",
+      partOfSpeech: "",
+      voiceTypes: [],
+    },
+    target: {
+      word: "",
+      partOfSpeech: "",
+      voiceTypes: [],
+    },
+  })
   const [unit, setUnit] = useState<Unit>({
     number: "",
     title: "",
@@ -693,13 +706,70 @@ export default function DynamicCourseForm() {
     }))
   }
 
+
+  // Handlers for course words
+  const handleWordChange = (language: "source" | "target", field: string, value: string) => {
+    setCourseWord((prev) => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        [field]: value,
+      },
+    }))
+  }
+
+  const addVoice = (language: "source" | "target") => {
+    setCourseWord((prev) => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: [
+          ...prev[language].voiceTypes,
+          {
+            type: "",
+            audioUrl: "",
+          },
+        ],
+      },
+    }))
+  }
+
+  const handleVoiceChange = (language: "source" | "target", index: number, field: string, value: string) => {
+    setCourseWord((prev) => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: prev[language].voiceTypes.map((voice, i) =>
+          i === index ? { ...voice, [field]: value } : voice
+        ),
+      },
+    }))
+  }
+
+  const handleCourseWordSubmit = () => {
+    console.log(JSON.stringify(courseWord, null, 2))
+  }
+
+  // First, add this new handler function near your other course word handlers
+  const removeVoice = (language: "source" | "target", index: number) => {
+    setCourseWord((prev) => ({
+      ...prev,
+      [language]: {
+        ...prev[language],
+        voiceTypes: prev[language].voiceTypes.filter((_, i) => i !== index),
+      },
+    }))
+  }
+
   return (
     <div className="container mx-auto p-4 w-full">
       <Tabs defaultValue="edit">
         <TabsList className="mb-4">
           <TabsTrigger value="edit">Edit</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
+          <TabsTrigger value="courseWords">Course Words</TabsTrigger>
         </TabsList>
+
         <TabsContent value="edit">
           <Card className="mb-6">
             <CardHeader>
@@ -782,6 +852,9 @@ export default function DynamicCourseForm() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+          <TabsContent value="courseWords">
+            <CourseWords />
         </TabsContent>
       </Tabs>
     </div>
