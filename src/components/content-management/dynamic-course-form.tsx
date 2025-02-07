@@ -12,23 +12,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SortableContainer } from "./sortable-container"
 import type { Unit, Exercise, DraggableSection, MatchPairSection, ListenChoiceOption, ChoosePicOption } from "./types"
 import { CourseWordsForm } from "./course-words-form"
+import { CourseWordsView } from "./course-words-view"
+import type { WordFormData } from "@/types/courseWords"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface VoiceType {
   type: string;
   audioUrl: string;
-}
-
-interface WordFormData {
-  source: {
-    word: string;
-    partOfSpeech: string;
-    voiceTypes: VoiceType[];
-  };
-  target: {
-    word: string;
-    partOfSpeech: string;
-    voiceTypes: VoiceType[];
-  };
 }
 
 export default function DynamicCourseForm() {
@@ -798,7 +796,8 @@ export default function DynamicCourseForm() {
         <TabsList className="mb-4">
           <TabsTrigger value="edit">Edit</TabsTrigger>
           <TabsTrigger value="preview">Preview</TabsTrigger>
-          <TabsTrigger value="course-words">Course Words</TabsTrigger>
+          <TabsTrigger value="course-words-form">Add Course Words</TabsTrigger>
+          <TabsTrigger value="course-words-view">View Course Words</TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
           <Card className="mb-6">
@@ -883,8 +882,11 @@ export default function DynamicCourseForm() {
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="course-words">
+        <TabsContent value="course-words-form">
           <CourseWordsForm />
+        </TabsContent>
+        <TabsContent value="course-words-view">
+          <CourseWordsView />
         </TabsContent>
       </Tabs>
     </div>

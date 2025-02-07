@@ -5,23 +5,12 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
+import { useCourseWordsStore } from "@/store/courseWordsStore"
+import type { WordFormData } from "@/types/courseWords"
 
 interface VoiceType {
   type: string;
   audioUrl: string;
-}
-
-interface WordFormData {
-  source: {
-    word: string;
-    partOfSpeech: string;
-    voiceTypes: VoiceType[];
-  };
-  target: {
-    word: string;
-    partOfSpeech: string;
-    voiceTypes: VoiceType[];
-  };
 }
 
 export function CourseWordsForm() {
@@ -37,6 +26,8 @@ export function CourseWordsForm() {
       voiceTypes: [],
     },
   });
+
+  const addCourseWord = useCourseWordsStore(state => state.addCourseWord)
 
   const partsOfSpeechUrdu = [
     { value: "ism", label: "اسم" },
@@ -102,7 +93,11 @@ export function CourseWordsForm() {
   };
 
   const handleSubmitWordForm = () => {
-    console.log(JSON.stringify(wordFormData, null, 2));
+    addCourseWord(wordFormData)
+    setWordFormData({
+      source: { word: "", partOfSpeech: "", voiceTypes: [] },
+      target: { word: "", partOfSpeech: "", voiceTypes: [] }
+    })
   };
 
   return (
