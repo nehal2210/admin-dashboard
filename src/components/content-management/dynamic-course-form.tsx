@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { CourseSentencesForm } from "./course-sentences-form"
 
 interface VoiceType {
   type: string;
@@ -798,6 +799,7 @@ export default function DynamicCourseForm() {
           <TabsTrigger value="preview">Preview</TabsTrigger>
           <TabsTrigger value="course-words-form">Add Course Words</TabsTrigger>
           <TabsTrigger value="course-words-view">View Course Words</TabsTrigger>
+          <TabsTrigger value="course-sentences">Course Sentences</TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
           <Card className="mb-6">
@@ -887,6 +889,9 @@ export default function DynamicCourseForm() {
         </TabsContent>
         <TabsContent value="course-words-view">
           <CourseWordsView />
+        </TabsContent>
+        <TabsContent value="course-sentences">
+          <CourseSentencesForm />
         </TabsContent>
       </Tabs>
     </div>
