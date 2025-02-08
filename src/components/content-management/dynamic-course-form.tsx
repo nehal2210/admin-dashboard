@@ -24,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CourseSentencesForm } from "./course-sentences-form"
+import { SentenceView } from "./sentence-view"
 
 interface VoiceType {
   type: string;
@@ -800,6 +801,7 @@ export default function DynamicCourseForm() {
           <TabsTrigger value="course-words-form">Add Course Words</TabsTrigger>
           <TabsTrigger value="course-words-view">View Course Words</TabsTrigger>
           <TabsTrigger value="course-sentences">Course Sentences</TabsTrigger>
+          <TabsTrigger value="sentence-view">View Sentences</TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
           <Card className="mb-6">
@@ -892,6 +894,9 @@ export default function DynamicCourseForm() {
         </TabsContent>
         <TabsContent value="course-sentences">
           <CourseSentencesForm />
+        </TabsContent>
+        <TabsContent value="sentence-view">
+          <SentenceView />
         </TabsContent>
       </Tabs>
     </div>
