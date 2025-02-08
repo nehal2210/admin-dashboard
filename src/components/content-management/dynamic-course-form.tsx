@@ -26,6 +26,7 @@ import {
 import { CourseSentencesForm } from "./course-sentences-form"
 import { CourseSentencesView } from "./course-sentences-view"
 
+
 interface VoiceType {
   type: string;
   audioUrl: string;
@@ -897,6 +898,7 @@ export default function DynamicCourseForm() {
         </TabsContent>
         <TabsContent value="course-sentences-view">
           <CourseSentencesView />
+
         </TabsContent>
       </Tabs>
     </div>
