@@ -1,5 +1,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
+import axios from "axios"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X } from "lucide-react"
 import { useCourseWordsStore } from "@/store/courseWordsStore"
 import type { WordFormData } from "@/types/courseWords"
+import { api } from "@/lib/axios"
 
 interface VoiceType {
   type: string;
@@ -14,6 +18,7 @@ interface VoiceType {
 }
 
 export function CourseWordsForm() {
+  const [isLoading, setIsLoading] = useState(false);
   const [wordFormData, setWordFormData] = useState<WordFormData>({
     source: {
       word: "",
@@ -92,14 +97,42 @@ export function CourseWordsForm() {
     }));
   };
 
-  const handleSubmitWordForm = () => {
-    addCourseWord(wordFormData)
-    setWordFormData({
-      source: { word: "", partOfSpeech: "", voiceTypes: [] },
-      target: { word: "", partOfSpeech: "", voiceTypes: [] }
-    })
+  const handleSubmitWordForm = async () => {
+    // Basic validation
+    if (!wordFormData.source.word || !wordFormData.target.word) {
+      toast.error("Please fill in both source and target words");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await api.post('/admin/course-words', {
+        source: {
+          ...wordFormData.source,
+          languageId: 1,
+        },
+        target: {
+          ...wordFormData.target,
+          languageId: 2,
+        }
+      });
+
+      toast.success("Words added successfully!");
+      
+      // Reset form
+      setWordFormData({
+        source: { word: "", partOfSpeech: "", voiceTypes: [] },
+        target: { word: "", partOfSpeech: "", voiceTypes: [] }
+      });
+    } catch (error) {
+      console.error("Error adding words:", error);
+      toast.error("Failed to add words");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Update the submit button in the return statement
   return (
     <Card>
       <CardHeader>
@@ -274,10 +307,21 @@ export function CourseWordsForm() {
           ))}
         </div>
 
-        <Button onClick={handleSubmitWordForm} className="w-full">
-          Submit
+        <Button 
+          onClick={handleSubmitWordForm} 
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit"
+          )}
         </Button>
       </CardContent>
     </Card>
   );
-} 
+}
