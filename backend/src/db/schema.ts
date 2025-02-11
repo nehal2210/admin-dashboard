@@ -99,20 +99,20 @@ export const lessonProgress = pgTable("game_progress", {
 
 // Words Table
 export const words = pgTable("words", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   languageId: integer("language_id").references(() => languages.id, { onDelete: "cascade" }),
   text: varchar("text", { length: 50 }).notNull(),
   partOfSpeech: varchar("part_of_speech", { length: 50 }),
-  createdAt: timestamp("created_at"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Word Audio Table
 export const wordAudio = pgTable("word_audio", {
-  id: integer("id").primaryKey(),
+  id: serial("id").primaryKey(),
   wordId: integer("word_id").references(() => words.id, { onDelete: "cascade" }),
   characterId: integer('character_id').references(() => characters.id, { onDelete: 'cascade' }),
   audioUrl: text("audio_url"),
-  durationMs: integer("duration_ms"),
+  // durationMs: integer("duration_ms"),
 });
 
 // Word Translations Table
