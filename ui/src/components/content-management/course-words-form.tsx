@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X } from "lucide-react"
+import { X, Loader2 } from "lucide-react"
 import { useCourseWordsStore } from "@/store/courseWordsStore"
 import type { WordFormData } from "@/types/courseWords"
+import { useToast } from "@/hooks/use-toast"
 
 interface VoiceType {
   type: string;
@@ -28,6 +29,8 @@ export function CourseWordsForm() {
   });
 
   const addCourseWord = useCourseWordsStore(state => state.addCourseWord)
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const partsOfSpeechUrdu = [
     { value: "ism", label: "اسم" },
@@ -92,12 +95,52 @@ export function CourseWordsForm() {
     }));
   };
 
-  const handleSubmitWordForm = () => {
-    addCourseWord(wordFormData)
-    setWordFormData({
-      source: { word: "", partOfSpeech: "", voiceTypes: [] },
-      target: { word: "", partOfSpeech: "", voiceTypes: [] }
-    })
+  const handleSubmitWordForm = async () => {
+    // Basic validation
+    if (!wordFormData.source.word || !wordFormData.target.word) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Both source and target words are required",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/course-words', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(wordFormData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Success",
+          description: "Data successfully stored!",
+        });
+        
+        // Reset form
+        setWordFormData({
+          source: { word: "", partOfSpeech: "", voiceTypes: [] },
+          target: { word: "", partOfSpeech: "", voiceTypes: [] }
+        });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error storing data!",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -274,8 +317,19 @@ export function CourseWordsForm() {
           ))}
         </div>
 
-        <Button onClick={handleSubmitWordForm} className="w-full">
-          Submit
+        <Button 
+          onClick={handleSubmitWordForm} 
+          className="w-full" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            'Submit'
+          )}
         </Button>
       </CardContent>
     </Card>
