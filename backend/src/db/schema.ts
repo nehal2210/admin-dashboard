@@ -137,7 +137,7 @@ export const userVocabulary = pgTable("user_vocabulary", {
 
 // Sentences Table
 export const sentences = pgTable('sentences', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   text: text('text').notNull(),
   languageId: integer('language_id')
     .references(() => languages.id, { onDelete: "cascade" })
@@ -146,13 +146,13 @@ export const sentences = pgTable('sentences', {
 
 // Sentence Audio Table
 export const sentenceAudio = pgTable('sentence_audio', {
-  id: integer('id').primaryKey(),
+  id: serial('id').primaryKey(),
   sentenceId: integer('sentence_id')
     .references(() => sentences.id, { onDelete: "cascade" })
     .notNull(),
   characterId: integer('character_id').references(() => characters.id, { onDelete: 'cascade' }),
   audioUrl: text('audio_url').notNull(),
-  durationMs: integer('duration_ms').notNull(),
+  durationMs: integer('duration_ms'),
 });
 
 // Sentence Translations Table
